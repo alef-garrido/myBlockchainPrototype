@@ -1,3 +1,4 @@
+const sha256 = require('sha256');
 
 // in Js there are no 'Clasess' as they are in many other lenguages, instead clasess are sugar-coding on top of constructor functions and the object prototype
 //But we could try something like this:
@@ -16,11 +17,11 @@ function Blockchain() {
     this.pendingTransactions = [] // this will hold new trnasaction before they're place into a block and mined
 }
 
-Blockchain.prototype.createnewBlock = function(nonce, previousBlockHash, hash) {
+Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
     const newBlock = { // This will be a block iside of our chain. All data that we nweed is going to be store here.
         index: this.chain.length + 1, //this will be the blockNumber in our chain
         timestamp: Date.now(), // when this block was created
-        transactions: this.pendingTransactions, //Inside of this block all the new transactions that had been jus created so they can never be changed/ On this block should be all pending/new transactions that are wainting to be placed into a block
+        transactions: this.pendingTransactions, //Inside of this block all the new transactions that had been jus created so they can never be changed/ On this block should be all pending/new transactions that are wainting to be placed into a new block
         nonce: nonce, //number from a proof of work proving that we have created this new block in a legitimate way
         hash: hash, // this will be tha data from our new block containing a string with all transactions made
         previousBlockHash: previousBlockHash // hash of previous block
@@ -37,17 +38,29 @@ Blockchain.prototype.getLastBlock = function() {
 }
 
 // Create a new transaction
-Blockchain.prototype.createNewTransaction = function(amount, sender, receipient) {
+Blockchain.prototype.createNewTransaction = function(amount, sender, recipient) {
     const newTransaction = {
         amount: amount,
         sender: sender,
-        receipient: receipient
+        recepient: recipient
     }
 
     this.pendingTransactions.push(newTransaction);
 
     return this.getLastBlock()['index'] + 1;
 }
+
+
+//Add hashing method using SHA256 npm library
+Blockchain.prototype.hashBlock = function(previousBlockHash, currentBlockData, nonce) {
+    const dataAsString = previousBlockHash + nonce.toString() + JSON.stringify(currentBlockData);
+    const hash = sha256(dataAsString);
+    return hash;
+}
+
+
+
+
 
 // exports code to be tested
 module.exports = Blockchain; 
