@@ -1,4 +1,5 @@
 const sha256 = require('sha256');
+const currentNodeUrl = process.argv[3];
 
 // in Js there are no 'Clasess' as they are in many other lenguages, instead clasess are sugar-coding on top of constructor functions and the object prototype
 //But we could try something like this:
@@ -15,10 +16,13 @@ const sha256 = require('sha256');
 // Create Blockchain constructor function
 
 function Blockchain() {
-    this.chain = [] // this will store every block we create as a chain
-    this.pendingTransactions = [] // this will hold new trnasaction before they're place into a block and mined
+	this.chain = [] // this will store every block we create as a chain
+	this.pendingTransactions = [] // this will hold new trnasaction before they're place into a block and mined
+   
+	this.currentNodeUrl = currentNodeUrl;
+   	this.networkNodes = [];
 
-    this.createNewBlock(100, '0', '0');    
+   	this.createNewBlock(100, '0', '0');    
 }
 
 Blockchain.prototype.createNewBlock = function(nonce, previousBlockHash, hash) {
