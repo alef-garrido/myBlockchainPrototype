@@ -1,5 +1,6 @@
 const sha256 = require('sha256');
 const currentNodeUrl = process.argv[3];
+const uuid = require('uuid/v1');
 
 // in Js there are no 'Clasess' as they are in many other lenguages, instead clasess are sugar-coding on top of constructor functions and the object prototype
 //But we could try something like this:
@@ -50,11 +51,16 @@ Blockchain.prototype.createNewTransaction = function(amount, sender, recipient) 
     const newTransaction = {
         amount: amount,
         sender: sender,
-        recepient: recipient
-    }
+        recepient: recipient,
+        transactionId: uuid().split('-').join('')
+    };
 
-    this.pendingTransactions.push(newTransaction);
+    return newTransaction;
+};
 
+//adding new Transaction object to Pending transaction on current node 
+Blockchain.prototype.addTransactionToPendingTransactions = function(transactionObj) {
+    this.pendingTransactions.push(transactionObj);
     return this.getLastBlock()['index'] + 1;
 }
 
