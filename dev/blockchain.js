@@ -51,7 +51,7 @@ Blockchain.prototype.createNewTransaction = function(amount, sender, recipient) 
     const newTransaction = {
         amount: amount,
         sender: sender,
-        recepient: recipient,
+        recipient: recipient,
         transactionId: uuid().split('-').join('')
     };
 
@@ -100,8 +100,8 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
         if (blockHash.substring(0,4) !== '0000') validChain = false;
         if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validChain = false; //chain not valid
 
-        console.log('previousBlockHash =>', prevBlock['hash']);
-        console.log('currentBlockHash =>', currentBlock['hash']);
+        'previousBlockHash =>', prevBlock['hash'];
+        'currentBlockHash =>', currentBlock['hash'];
     };
 
     const genesisBlock = blockchain[0];
@@ -114,6 +114,60 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
 
     return validChain;
 };
+
+
+//Get Block by blockHash
+Blockchain.prototype.getBlock = function(blockHash) {
+    let correctBlock = null;
+    this.chain.forEach(block => {
+        if(block.hash === blockHash) correctBlock = block;
+    });
+    return correctBlock;
+};
+
+//Get Transaction by transaction-Id
+Blockchain.prototype.getTransaction = function(transactionId) {
+    let correctTransaction = null;
+    let correctBlock = null;
+
+    this.chain.forEach(block => {
+        block.transactions.forEach(transaction => {
+            if (transaction.transactionId === transactionId) {
+                correctTransaction = transaction;
+                correctBlock = block;
+            };
+        });
+    });
+
+    return {
+        transaction: correctTransaction,
+        block: correctBlock
+    };
+};
+
+//get Address related data
+Blockchain.prototype.getAddressData = function(address) {
+    const addressTransactions = [];
+    this.chain.forEach(block => {
+        block.transactions.forEach(transaction => {
+            if (transaction.sender === address || transaction.recipient === address) {
+                addressTransactions.push(transaction);
+            };
+        });
+    });
+
+    let balance = 0;
+    addressTransactions.forEach(transaction => {
+        if (transaction.recipient == address) balance += transaction.amount;
+        else if (transaction.sender === address) balance -= transaction.amount;
+    });
+
+    return {
+        addressTransactions: addressTransactions,
+        addressBalance: balance
+    };
+};
+
 
 // exports code to be tested
 module.exports = Blockchain; 

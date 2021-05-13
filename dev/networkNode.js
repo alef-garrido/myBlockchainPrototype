@@ -228,6 +228,42 @@ app.get('/consensus', function(req, res) {
 });
 
 
+// Endpoints for Explorer interface
+
+//get block by blokHash
+app.get('/block/:blockHash', function(req, res) {
+	const blockHash = req.params.blockHash;
+	const correctBlock = bitcoin.getBlock(blockHash);
+	res.json({
+		block: correctBlock
+	});
+});
+
+//transaction by transactionId
+app.get('/transaction/:transactionId', function(req, res) {
+	const transactionId = req.params.transactionId;
+	const transactionData = bitcoin.getTransaction(transactionId);
+	res.json({
+		transaction: transactionData.transaction,
+		block: transactionData.block
+	});
+});
+
+// Get balance/transaction by address
+app.get('/address/:address', function(req, res) {
+	const address= req.params.address;
+	const addressData = bitcoin.getAddressData(address);
+
+	res.json({
+		addressData: addressData
+	});
+});
+
+
+app.get('/block-explorer', function(req, res) {
+	res.sendFile('./block-explorer/index.html', { root: __dirname });
+});
+
 app.listen(port, function() {
         console.log(`Listening on port ${port}...`);
 });
